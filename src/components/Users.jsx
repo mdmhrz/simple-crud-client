@@ -13,7 +13,7 @@ const Users = ({ usersPromie }) => {
         const name = e.target.name.value;
         const email = e.target.email.value;
         const newUser = { name, email };
-        // console.log(newUser);
+        console.log(newUser);
 
 
         // create user in the DB
@@ -39,14 +39,26 @@ const Users = ({ usersPromie }) => {
 
 
 
-    const handleUserDelete = () => {
-        console.log('delete ');
+    const handleUserDelete = (id) => {
+        console.log('delete', id);
+        fetch(`http://localhost:3000/users/${id}`, {
+            method: 'DELETE'
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.deletedCount) {
+                    const remainingUsers = users.filter(user => user._id !== id);
+                    setUsers(remainingUsers)
+                    console.log('after delete', data);
+                }
+            })
     }
 
     return (
         <div>
 
             <div>
+                <h4>User: {users.length}</h4>
                 <form onSubmit={handleAddUser}>
                     <input type="text" name="name" id="" />
                     <br />
@@ -60,7 +72,7 @@ const Users = ({ usersPromie }) => {
                 {users.map(user => <p
                     key={user._id}>
                     {user.name}: {user.email}
-                    <button>X</button>
+                    <button onClick={() => handleUserDelete(user._id)}>X</button>
                 </p>)}
             </div>
         </div>
